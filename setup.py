@@ -17,8 +17,8 @@ def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 setup(
-  name = 'elytica-dss',
-  packages = ['elytica-dss'],
+  name = 'elytica_dss',
+  packages = ['elytica_dss'],
   version_format='{tag}',
   license='GPL',
   description = 'Package for elytica service we use to build decision support systems (DSSs).',

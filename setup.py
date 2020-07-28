@@ -28,7 +28,7 @@ setup(
   keywords = ['DSS', 'decision', 'support', 'system', 'mixed', 'integer', 'linear', 'programming'],
   setup_requires=['setuptools-git-version'],
   install_requires=[  
-    'requests>=1.6', 'json'
+    'requests>=1.6'
   ],
   classifiers=[
     'Development Status :: 3 - Alpha',

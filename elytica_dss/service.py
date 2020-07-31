@@ -1,10 +1,10 @@
 import json
 import requests
-from user import User
-from project import Project
-from application import Application
-from job import Job
-from inputfile import InputFile
+from .user import User
+from .project import Project
+from .application import Application
+from .job import Job
+from .inputfile import InputFile
 
 class Service:
   def __init__(self, api_key):

@@ -97,7 +97,9 @@ class Service:
           self.__inputfiles=[i for i in ifs if i.id in oifs]
         if isinstance(results.json()['newfiles'], list):
           for x in results.json()['newfiles']:
-            self.__inputfiles.append(InputFile(x))
+            inputFile = InputFile(x)
+            self.__inputfiles.append(inputFile)
+            return inputFile
       else:
         raise SystemExit('Invalid InputFile data.')
       return self.__inputfiles

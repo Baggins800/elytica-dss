@@ -202,7 +202,7 @@ class Service:
         data={"updatedstatus": 1})
       results.raise_for_status()
       if isinstance(results.json(), object):
-        self.__selected_job = results.json()
+        self.__selected_job = Job(results.json())
         for x in self.__jobs:
           if x.id == self.__selected_job.id:
             x = self.__selected_job

@@ -5,7 +5,7 @@ from .project import Project
 from .application import Application
 from .job import Job
 from .inputfile import InputFile
-from .inputfile import OutputFile
+from .outputfile import OutputFile
 
 class Service:
   def __init__(self, api_key):

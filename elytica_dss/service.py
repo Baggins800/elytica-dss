@@ -148,13 +148,13 @@ class Service:
     except requests.exceptions.HTTPError as err:
       raise SystemExit(err)
 
-  def getDownloadFile(self, file):
+  def downloadFile(self, file):
     try:
       results = requests.get(\
         self.__scheme + self.__basename +\
         self.__api_projects_download.replace("{project}",\
         str(self.__selected_project.id)).replace("{file}",\
-        str(self.file.id)), \
+        str(file.id)), \
         headers=self.__headers) 
       results.raise_for_status()
       return results.content

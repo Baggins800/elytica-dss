@@ -144,7 +144,7 @@ class Service:
           self.__outputfiles.append(OutputFile(x))
       else:
         raise SystemExit('Invalid OutputFile data.')
-      return self.__inputfiles
+      return self.__outputfiles
     except requests.exceptions.HTTPError as err:
       raise SystemExit(err)
 

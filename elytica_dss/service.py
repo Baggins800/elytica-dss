@@ -5,6 +5,7 @@ from .project import Project
 from .application import Application
 from .job import Job
 from .inputfile import InputFile
+from .outputfile import OutputFile
 
 class Service:
   def __init__(self, api_key):
@@ -21,10 +22,13 @@ class Service:
     self.__api_update = "/update/{job}" 
     self.__api_projects_upload = "/projects/{project}/upload"
     self.__api_projects_assignfile = "/projects/{project}/assignfile/{job}"
+    self.__api_projects_outputfiles = "/projects/{project}/outputfiles/{job}"
+    self.__api_projects_download = "/projects/{project}/download/{file}"
     self.__projects = []
     self.__jobs = []
     self.__applications = []
     self.__inputfiles = []
+    self.__outputfiles = []
     self.__selected_project = None
     self.__selected_application = None
     self.__selected_job = None
@@ -77,6 +81,7 @@ class Service:
         self.__selected_job = x
         return x;
 
+
   def uploadFileContents(self, filename, contents):
     try:
       results = requests.post(\
@@ -121,6 +126,38 @@ class Service:
       else:
         raise SystemExit('Invalid InputFile data.')
       return self.__inputfiles
+    except requests.exceptions.HTTPError as err:
+      raise SystemExit(err)
+
+  def getOutputFiles(self):
+    try:
+      results = requests.get(\
+        self.__scheme + self.__basename +\
+        self.__api_projects_outputfiles.replace("{project}",\
+        str(self.__selected_project.id)).replace("{job}",\
+        str(self.__selected_job.id)), \
+        headers=self.__headers) 
+      results.raise_for_status()
+      self.__outputfiles.clear()
+      if isinstance(results.json(), list):
+        for x in results.json():
+          self.__outputfiles.append(OutputFile(x))
+      else:
+        raise SystemExit('Invalid OutputFile data.')
+      return self.__outputfiles
+    except requests.exceptions.HTTPError as err:
+      raise SystemExit(err)
+
+  def downloadFile(self, file):
+    try:
+      results = requests.get(\
+        self.__scheme + self.__basename +\
+        self.__api_projects_download.replace("{project}",\
+        str(self.__selected_project.id)).replace("{file}",\
+        str(file.id)), \
+        headers=self.__headers) 
+      results.raise_for_status()
+      return results.content
     except requests.exceptions.HTTPError as err:
       raise SystemExit(err)
 
@@ -185,7 +222,7 @@ class Service:
       results.raise_for_status()
       if isinstance(results.json(), object):
         self.__selected_job = results.json()
-        self.__jobs.append(self.__selected_project)  
+        self.__jobs.append(self.__selected_project) 
       else:
         raise SystemExit('Invalid Job data.')
       return self.__jobs

@@ -136,7 +136,6 @@ class Service:
         self.__api_projects_outputfiles.replace("{project}",\
         str(self.__selected_project.id)).replace("{job}",\
         str(self.__selected_job.id)), \
-        data=data,\
         headers=self.__headers) 
       results.raise_for_status()
       self.__outputfiles.clear()
@@ -156,7 +155,6 @@ class Service:
         self.__api_projects_download.replace("{project}",\
         str(self.__selected_project.id)).replace("{file}",\
         str(self.file.id)), \
-        data=data,\
         headers=self.__headers) 
       results.raise_for_status()
       return results.content

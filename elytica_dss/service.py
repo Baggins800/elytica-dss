@@ -12,7 +12,7 @@ class Service:
     self.__api_key = api_key
     self.__headers = {"Authorization": "Bearer " + api_key}
     self.__scheme = "https://"
-    self.__basename = "elytica.com/api"
+    self.__basename = "service.elytica.com/api"
     self.__api_user = "/user" 
     self.__api_projects = "/projects" 
     self.__api_applications = "/applications" 

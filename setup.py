@@ -3,7 +3,7 @@ import sys
 
 try:
     from setuptools import setup
-    from version import get_git_version
+    from setuptools_git_versioning import version_from_git
 
 except ImportError:
     from distutils.core import setup
@@ -18,15 +18,16 @@ def read(fname):
 
 setup(
   name = 'elytica_dss',
+  version=version_from_git(),
   packages = ['elytica_dss'],
-  version_format='{tag}',
+  version_config=True,
+  setup_requires=['setuptools-git-versioning'],
   license='GPL',
   description = 'Package for elytica service we use to build decision support systems (DSSs).',
   author = 'Ruan Luies',
   author_email = 'ruan@elytica.com',
   url = 'https://github.com/baggins800/elytica-dss',
   keywords = ['DSS', 'decision', 'support', 'system', 'mixed', 'integer', 'linear', 'programming'],
-  setup_requires=['setuptools-git-version'],
   install_requires=[  
     'requests>=1.6'
   ],

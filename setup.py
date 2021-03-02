@@ -31,6 +31,7 @@ setup(
       "count_commits_from_version_file": False
   },
   setup_requires=['setuptools-git-versioning'],
+
   license='GPL',
   description = 'Package for elytica service we use to build decision support systems (DSSs).',
   author = 'Ruan Luies',
@@ -38,7 +39,8 @@ setup(
   url = 'https://github.com/baggins800/elytica-dss',
   keywords = ['DSS', 'decision', 'support', 'system', 'mixed', 'integer', 'linear', 'programming'],
   install_requires=[  
-    'requests>=1.6'
+    'requests>=1.6',
+    'setuptools-git-versioning'
   ],
   classifiers=[
     'Development Status :: 3 - Alpha',

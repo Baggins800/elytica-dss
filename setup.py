@@ -20,7 +20,16 @@ setup(
   name = 'elytica_dss',
   version=version_from_git(),
   packages = ['elytica_dss'],
-  version_config=True,
+  version_config={
+      "template": "{tag}",
+      "dev_template": "{tag}.dev{ccount}+git.{sha}",
+      "dirty_template": "{tag}.dev{ccount}+git.{sha}.dirty",
+      "starting_version": "0.0.1",
+      "metadata_version": "{tag}",
+      "version_callback": None,
+      "version_file": None,
+      "count_commits_from_version_file": False
+  },
   setup_requires=['setuptools-git-versioning'],
   license='GPL',
   description = 'Package for elytica service we use to build decision support systems (DSSs).',

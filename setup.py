@@ -40,7 +40,10 @@ setup(
   keywords = ['DSS', 'decision', 'support', 'system', 'mixed', 'integer', 'linear', 'programming'],
   install_requires=[  
     'requests>=1.6',
-    'setuptools-git-versioning'
+    'setuptools-git-versioning',
+    'pusher',
+    'websocket-client==0.57.0',
+    'pysher==1.0.6'
   ],
   classifiers=[
     'Development Status :: 3 - Alpha',

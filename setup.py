@@ -42,7 +42,7 @@ setup(
     'requests>=1.6',
     'setuptools-git-versioning',
     'websocket-client==0.57.0',
-    'pysher-elytica==1.0.7'
+    'elytica-pysher==1.0.7'
   ],
   classifiers=[
     'Development Status :: 3 - Alpha',

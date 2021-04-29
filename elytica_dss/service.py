@@ -19,8 +19,7 @@ class Service:
     self.__connected = False
     self.__wshost = 'socket.elytica.com'
     self.__pusher = pysher.Pusher(custom_host=self.__wshost, key='elytica_service',\
-      secret=self.__api_key)
-    self.__pusher.ping_interval = 29
+      secret=self.__api_key, auto_sub=True, ping_interval=30)
     self.__headers = {"Authorization": "Bearer " + api_key}
     self.__scheme = "https://"
     self.__basename = "service.elytica.com/api"
@@ -44,6 +43,9 @@ class Service:
     self.__selected_project = None
     self.__selected_application = None
     self.__selected_job = None
+
+  def ping(self):
+    self.__pusher.connection.send_ping()
 
   def authChannel(self, channel_name):
     if self.__connected:
@@ -111,9 +113,6 @@ class Service:
       if id == x.id:
         self.__selected_project = x
         return x;
-
-  def jobFinished(self, data):
-    json.loads(data)['finished']
 
   def __subscribeJob(self, id):
     channel = self.__job_channel_name.format(id)

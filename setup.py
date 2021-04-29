@@ -41,9 +41,8 @@ setup(
   install_requires=[  
     'requests>=1.6',
     'setuptools-git-versioning',
-    'pusher',
     'websocket-client==0.57.0',
-    'pysher==1.0.6'
+    'pysher-elytica==1.0.7'
   ],
   classifiers=[
     'Development Status :: 3 - Alpha',

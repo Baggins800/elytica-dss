@@ -12,16 +12,11 @@ from .outputfile import OutputFile
 
 class Service:
   def __init__(self, api_key):
-    root = logging.getLogger()
-    root.setLevel(logging.INFO)
-    ch = logging.StreamHandler(sys.stdout)
-    root.addHandler(ch)
     self.__api_key = api_key
     self.__job_channel_auth = None
     self.__job_channel_name = 'presence-jobs.{}'
     self.__job_channel = None
     self.__connected = False
-    self.__auth_thread = None
     self.__wshost = 'socket.elytica.com'
     self.__pusher = pysher.Pusher(custom_host=self.__wshost, key='elytica_service',\
       secret=self.__api_key)
@@ -87,15 +82,15 @@ class Service:
 
   
   def __subscriptionSucceededHandler(self, data):
-    print(data)
+    pass
 
   def __connectHandler(self, data):
-    payload = json.loads(data)
-    print(payload)
     self.__connected = True
+    pass
 
   def __disconnectHandler(self, data):
     self.__connected = False
+    pass
 
   def selectProjectByName(self, name):
     self.__jobs.clear()

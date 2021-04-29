@@ -1,5 +1,8 @@
 import json
 import requests
+import logging
+import pysher
+import sys
 from .user import User
 from .project import Project
 from .application import Application
@@ -10,10 +13,18 @@ from .outputfile import OutputFile
 class Service:
   def __init__(self, api_key):
     self.__api_key = api_key
+    self.__job_channel_auth = None
+    self.__job_channel_name = 'presence-jobs.{}'
+    self.__job_channel = None
+    self.__connected = False
+    self.__wshost = 'socket.elytica.com'
+    self.__pusher = pysher.Pusher(custom_host=self.__wshost, key='elytica_service',\
+      secret=self.__api_key, auto_sub=True, ping_interval=30)
     self.__headers = {"Authorization": "Bearer " + api_key}
     self.__scheme = "https://"
     self.__basename = "service.elytica.com/api"
     self.__api_user = "/user" 
+    self.__channel_auth = "service.elytica.com/broadcasting/auth"
     self.__api_projects = "/projects" 
     self.__api_applications = "/applications" 
     self.__api_projects_createjob = "/projects/{project}/createjob" 
@@ -33,6 +44,21 @@ class Service:
     self.__selected_application = None
     self.__selected_job = None
 
+  def ping(self):
+    self.__pusher.connection.send_ping()
+
+  def authChannel(self, channel_name):
+    if self.__connected:
+      data = {"socket_id": self.__pusher.connection.socket_id, "channel_name": channel_name}
+      try:
+        results = requests.post(\
+          self.__scheme + self.__channel_auth, \
+          data=data, headers=self.__headers)
+        results.raise_for_status()
+        self.__job_channel_auth = results.json()
+      except requests.exceptions.HTTPError as err:
+        raise SystemExit(err) 
+    
   def login(self, *args, **kwargs):
     self.__api_key = kwargs.get('api_key', self.__api_key)
     self.__headers = {"Authorization": "Bearer " + self.__api_key}
@@ -42,8 +68,31 @@ class Service:
         headers=self.__headers)
       results.raise_for_status()
       self.__user = User(results.json())
+      self.__connectPusher()
     except requests.exceptions.HTTPError as err:
       raise SystemExit(err) 
+
+
+  def __connectPusher(self):
+    self.__pusher.connection.bind('pusher:connection_established',\
+      self.__connectHandler)
+    self.__pusher.connection.bind('pusher:connection_failed',\
+      self.__disconnectHandler)
+    self.__pusher.connection.bind('pusher_internal:subscription_succeeded',\
+      self.__subscriptionSucceededHandler)
+    self.__pusher.connect()
+
+  
+  def __subscriptionSucceededHandler(self, data):
+    pass
+
+  def __connectHandler(self, data):
+    self.__connected = True
+    pass
+
+  def __disconnectHandler(self, data):
+    self.__connected = False
+    pass
 
   def selectProjectByName(self, name):
     self.__jobs.clear()
@@ -65,12 +114,21 @@ class Service:
         self.__selected_project = x
         return x;
 
+  def __subscribeJob(self, id):
+    channel = self.__job_channel_name.format(id)
+    self.authChannel(channel)
+    self.__pusher.user_data_string = self.__job_channel_auth['channel_data']
+    self.__job_channel = self.__pusher.subscribe(channel,\
+      auth=self.__job_channel_auth['auth'])
+
+
   def selectJobByName(self, name):
     if len(self.__jobs) == 0:
       self.getJobs()
     for x in self.__jobs:
       if name == x.name:
         self.__selected_job = x
+        self.__subscribeJob(x.id)
         return x;
 
   def selectJobById(self, id):
@@ -79,6 +137,7 @@ class Service:
     for x in self.__jobs:
       if id == x.id:
         self.__selected_job = x
+        self.__subscribeJob(x.id)
         return x;
 
 
@@ -229,8 +288,14 @@ class Service:
     except requests.exceptions.HTTPError as err:
       raise SystemExit(err)   
 
-  def queueJob(self):
+  def queueJob(self, finished_callback=None, stdout_callback=None):
     try:
+      if self.__job_channel is None: 
+        raise SystemExit('Connect to a job channel.')
+      if finished_callback is not None:
+        self.__job_channel.bind('client-finished', finished_callback)
+      if stdout_callback is not None:
+        self.__job_channel.bind('client-stdout', stdout_callback)
       results = requests.put(\
         self.__scheme + self.__basename +\
         self.__api_update.replace("{job}",\
